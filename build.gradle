@@ -1,0 +1,35 @@
+plugins{
+    id 'java'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.2'
+}
+
+group = 'com.vitiwari'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '21'
+}
+
+repositories {
+    mavenCentral()
+}
+
+//jar{
+//    manifest{
+//        attributes  'Main-Class' : 'com.vitiwari.GradleTutorial';
+//    }
+//}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'com.oracle.database.jdbc:ojdbc11:23.4.0.24.05'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+}
+
+//  Manually added lombok:1.18.30 because lombok:1.18.20 which is the default version was giving error
+//  Class com.sun.tools.javac.tree.JCTree$JCImport does not have member field 'com.sun.tools.javac.tree.JCTree qualid'
+//  Lombok was culprit

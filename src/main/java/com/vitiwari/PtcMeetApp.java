@@ -53,9 +53,3 @@ public class PtcMeetApp implements CommandLineRunner{
 }
 
 
-
-//    When the main method of a Spring Boot application runs, the Spring context has not yet been fully initialized.
-//    Therefore, repositories and other beans are not ready for use.
-//    In the main method, you manually instantiate and use classes, bypassing the Spring dependency
-//    injection mechanism. This can lead to issues like missing dependencies or improper configuration.
-//    Thus to resolve this issue we use CommandLineRunner.

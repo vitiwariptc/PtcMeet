@@ -4,7 +4,10 @@ import com.vitiwari.model.User;
 import com.vitiwari.services.EmailIdAlreadyExistsException;
 import com.vitiwari.services.UserService;
 import com.vitiwari.services.UsernameAlreadyExistsException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRange;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,11 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping()
+    public String Greet(HttpServletRequest req) {
+        return "Welcome To PTCMeet " + req.getSession().getId();
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
@@ -38,3 +46,6 @@ public class UserController {
         }
     }
 }
+
+
+// csrf token is used while updating data on server not generally on get request

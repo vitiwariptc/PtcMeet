@@ -10,6 +10,7 @@ public class PtcMeetApp implements CommandLineRunner{
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(PtcMeetApp.class, args);
+//        context.close();
     }
 
     @Override
@@ -51,5 +52,3 @@ public class PtcMeetApp implements CommandLineRunner{
 
     }
 }
-
-

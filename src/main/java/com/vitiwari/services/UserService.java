@@ -15,21 +15,21 @@ public class UserService {
     private UserRepository userRepository;
 
     public User registerUser(User user) {
-        Optional<User> userFound = userRepository.findByUserName(user.getUserName());
-        if(userFound.isPresent()) throw new UsernameAlreadyExistsException("Username already exists: " + user.getUserName());
+        User userFound = userRepository.findByUserName(user.getUserName());
+        if(userFound != null) throw new UsernameAlreadyExistsException("Username already exists: " + user.getUserName());
 
         userFound = userRepository.findByEmailId(user.getEmailId());
-        if(userFound.isPresent()) throw new EmailIdAlreadyExistsException("EmailId already exists: " + user.getEmailId());
+        if(userFound != null) throw new EmailIdAlreadyExistsException("EmailId already exists: " + user.getEmailId());
 
         return userRepository.save(user);
     }
 
-    public Optional<User> loginUser(String username, String password) {
-        Optional<User> user = userRepository.findByUserName(username);
-        if (user.isPresent() && password.equals(user.get().getPassword())) {
+    public User loginUser(String username, String password) {
+        User user = userRepository.findByUserName(username);
+        if (user != null && password.equals(user.getPassword())) {
             return user;
         }
-        return Optional.empty();
+        return new User();
     }
 
 }

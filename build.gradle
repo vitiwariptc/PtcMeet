@@ -24,6 +24,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 //    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'com.oracle.database.jdbc:ojdbc11:23.4.0.24.05'
     compileOnly 'org.projectlombok:lombok:1.18.30'

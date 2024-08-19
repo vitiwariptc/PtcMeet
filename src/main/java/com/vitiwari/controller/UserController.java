@@ -30,8 +30,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestParam String username, @RequestParam String password) {
-        Optional<User> user = userService.loginUser(username, password);
-        if (user.isPresent()) {
+        User user = userService.loginUser(username, password);
+        if (user != null) {
             return ResponseEntity.ok("Login successful!");
         } else {
             return ResponseEntity.status(401).body("Invalid username or password.");

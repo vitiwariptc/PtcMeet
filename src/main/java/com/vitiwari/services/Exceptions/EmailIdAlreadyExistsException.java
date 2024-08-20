@@ -1,4 +1,4 @@
-package com.vitiwari.services;
+package com.vitiwari.services.Exceptions;
 
 public class EmailIdAlreadyExistsException extends RuntimeException {
     public EmailIdAlreadyExistsException(String s) {

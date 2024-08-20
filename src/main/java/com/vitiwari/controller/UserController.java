@@ -1,15 +1,14 @@
 package com.vitiwari.controller;
 
 import com.vitiwari.model.User;
-import com.vitiwari.services.EmailIdAlreadyExistsException;
+import com.vitiwari.services.Exceptions.EmailIdAlreadyExistsException;
 import com.vitiwari.services.UserService;
-import com.vitiwari.services.UsernameAlreadyExistsException;
+import com.vitiwari.services.Exceptions.UsernameAlreadyExistsException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,6 +16,11 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping()
+    public String Greet(HttpServletRequest req) {
+        return "Welcome To PTCMeet " + req.getSession().getId();
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
@@ -30,11 +34,15 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestParam String username, @RequestParam String password) {
-        User user = userService.loginUser(username, password);
-        if (user != null) {
-            return ResponseEntity.ok("Login successful!");
+        String msg = userService.verify(username, password);
+        if (!msg.equals("Failed")) {
+            return ResponseEntity.ok(msg);
+
         } else {
             return ResponseEntity.status(401).body("Invalid username or password.");
         }
     }
 }
+
+
+// csrf token is used while updating data on server not generally on get request

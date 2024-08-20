@@ -1,4 +1,4 @@
-package com.vitiwari.services;
+package com.vitiwari.services.AuthProvider;
 
 import com.vitiwari.model.User;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,14 +1,13 @@
-package com.vitiwari.services;
+package com.vitiwari.services.AuthProvider;
 
 import com.vitiwari.model.User;
 import com.vitiwari.repository.UserRepository;
+import com.vitiwari.services.AuthProvider.MyUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
@@ -18,14 +17,13 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = repo.findByUserName(username);
+        User user = repo.findByUserName(username);
 
-        if (user.isEmpty()) {
+        if (user == null) {
             System.out.println("NO USER FOUND");
             throw new UsernameNotFoundException("USER NOT FOUND");
         }
 
-        User usr = user.get();
-        return new MyUserDetails(usr);
+        return new MyUserDetails(user);
     }
 }

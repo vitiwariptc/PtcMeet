@@ -3,16 +3,15 @@ package com.vitiwari.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "user1")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,7 +25,7 @@ public class User {
     private String emailId;
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Notes> notes;
 
     public User(int userId, String userName, String emailId, String password) {
@@ -36,6 +35,19 @@ public class User {
         this.password = password;
     }
 
+    public void addNote(Notes note) {
+        notes.add(note);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", emailId='" + emailId + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 
     //    @ManyToMany(mappedBy = "users")
 //    private List<Notes> notes;

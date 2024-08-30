@@ -3,37 +3,108 @@ package com.vitiwari.controller;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
 class Student{
-    public int id;
-    public String name;
-    public int marks;
+    private int id;
+    private String name;
+    private int marks;
 
-    public Student(int id, String name, int marks) {
-        this.id = id;
-        this.name = name;
-        this.marks = marks;
+    private Student(StudentBuilder1 stb) {
+        this.id = stb.id;
+        this.name = stb.name;
+        this.marks = stb.marks;
     }
 
-    public Student(){ }
-}
+    private Student(StudentBuilder2 stb){
+        this.id = stb.id;
+        this.name = stb.name;
+        this.marks = stb.marks;
+    }
 
+    public Student() { }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", marks=" + marks +
+                '}';
+    }
+
+    static class StudentBuilder1{
+        public int id;
+        public String name;
+        public int marks;
+        public StudentBuilder1() {
+
+        }
+
+        public StudentBuilder1 setId(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public StudentBuilder1 setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public StudentBuilder1 setMarks(int marks) {
+            this.marks = marks;
+            return this;
+        }
+
+        public Student build() {
+            return new Student(this);
+        }
+    }
+    static class StudentBuilder2{
+        public int id;
+        public String name;
+        public int marks;
+        public StudentBuilder2() { }
+
+        public static StudentBuilder2 builder() {
+            return new StudentBuilder2();
+        }
+
+        public StudentBuilder2 setId(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public StudentBuilder2 setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public StudentBuilder2 setMarks(int marks) {
+            this.marks = marks;
+            return this;
+        }
+
+        public Student build() {
+            return new Student(this);
+        }
+    }
+}
+// Builders are generally used with immuatable class
 
 @RestController("")
+@CrossOrigin
 public class StudentController {
 
     public List<Student> studentList= new ArrayList<>(List.of(
-            new Student(1, "vishnu", 65),
-            new Student(2, "aashish", 75)
+                new Student.StudentBuilder1().setName("Vishnu").setId(1).setMarks(65).build(),
+                Student.StudentBuilder2.builder().setName("Aashish").setId(2).setMarks(75).build()
             ));
 
     @GetMapping("/student")

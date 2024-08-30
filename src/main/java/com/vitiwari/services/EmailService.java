@@ -29,7 +29,11 @@ public class EmailService {
         helper.setText(body, true);
 
         javaMailSender.send(message);
+    }
 
+    public boolean isEmailValid(String email) {
+        String regex = "^[a-zA-Z0-9]+@[a-zA-Z]+\\.[a-zA-Z]+$";
+        return email.matches(regex);
     }
 
 }

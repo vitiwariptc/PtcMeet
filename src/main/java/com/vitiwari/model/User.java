@@ -25,18 +25,19 @@ public class User {
     private String emailId;
     private String password;
 
+    private boolean isVerified = false;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Notes> notes;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private RefreshToken refreshToken;
 
     public User(int userId, String userName, String emailId, String password) {
         this.userId = userId;
         this.userName = userName;
         this.emailId = emailId;
         this.password = password;
-    }
-
-    public void addNote(Notes note) {
-        notes.add(note);
     }
 
     @Override
@@ -46,10 +47,12 @@ public class User {
                 ", userName='" + userName + '\'' +
                 ", emailId='" + emailId + '\'' +
                 ", password='" + password + '\'' +
+                ", isVerified=" + isVerified +
                 '}';
     }
 
-    //    @ManyToMany(mappedBy = "users")
-//    private List<Notes> notes;
-//    This is where the relationship is mapped to
+    public void addNote(Notes note) {
+        notes.add(note);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.vitiwari.services.JWT;
 
+import com.vitiwari.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -32,16 +33,17 @@ public class JWTService {
         }
     }
 
-    public String generateToken(String username, String password) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("password", password);
+        claims.put("password", user.getPassword());
+        claims.put("emailId", user.getEmailId());
 
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(username)
+                .subject(user.getUserName())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+ 60*60*120))
+                .expiration(new Date(System.currentTimeMillis()+ 1000*60))
                 .and()
                 .signWith(getKey())
                 .compact();
@@ -73,9 +75,9 @@ public class JWTService {
                 .getPayload();
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token ) {
         final String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (!isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {

@@ -56,64 +56,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
 
-/**
-        http.csrf(customizer -> customizer.disable());
-        http.authorizeHttpRequests(req -> req.anyRequest().authenticated());
-        http.formLogin(Customizer.withDefaults());
-        http.httpBasic(Customizer.withDefaults());
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        Customizer<CsrfConfigurer<HttpSecurity>> cut = new Customizer<CsrfConfigurer<HttpSecurity>>() {
-            @Override
-            public void customize(CsrfConfigurer<HttpSecurity> cus) {
-                cus.disable();
-            }
-        };
-
-        http.csrf(cut);
- **/
-
         return http
-                .csrf(customizer -> customizer.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
-                                .requestMatchers("/api/users/**").permitAll()
+                                .requestMatchers("/api/users/**", "/password/**").permitAll()
                                 .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
-/**    @Bean
-    public UserDetailsService userDetailsService () {
-        UserDetails usr1 = User
-                .withDefaultPasswordEncoder()
-                .username("Vishnu")
-                .password("aaa")
-                .roles("USER")
-                .build();
-
-        UserDetails usr2 = User
-                .withDefaultPasswordEncoder()
-                .username("aashish")
-                .password("aaa")
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(usr1, usr2);
-    }  **/
 
 }
-
-
-
-
-
-
-// Whenever you want to customize something you need to create a config class with Beans which will
-// inject the object
 
 // For @FunctionalInterface we can use lambda

@@ -13,7 +13,7 @@ import java.util.UUID;
 @Service
 public class RefreshTokenService {
 
-    private long expTime = 15*60*1000;
+    private final long expTime = 15*60*1000;
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
@@ -47,5 +47,11 @@ public class RefreshTokenService {
         }
         refreshTokenRepository.save(rt);
         return rt;
+    }
+
+    
+    public void deleteRefreshToken(RefreshToken token) {
+        System.out.println(token);
+        refreshTokenRepository.deleteById(token.getRefreshTokenId());
     }
 }

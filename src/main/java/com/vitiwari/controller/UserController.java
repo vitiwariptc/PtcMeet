@@ -26,7 +26,7 @@ public class UserController {
 
     @GetMapping()
     public String Greet(HttpServletRequest req) {
-        return "Welcome To PTCMeet " + req.getSession().getId();
+        return "Welcome To Meet " + req.getSession().getId();
     }
 
     @PostMapping("/register")
@@ -73,7 +73,15 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(@RequestParam String userName) {
+        String msg = userService.logoutUser(userName);
 
+        if(!msg.equals("Failed"))
+            return ResponseEntity.ok("{\"msg\": \"%s\"}".formatted(msg));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
+    }
 }
 
 

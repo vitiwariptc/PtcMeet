@@ -3,7 +3,6 @@ package com.vitiwari.services;
 
 import com.vitiwari.model.RefreshToken;
 import com.vitiwari.model.User;
-import com.vitiwari.repository.RefreshTokenRepository;
 import com.vitiwari.repository.UserRepository;
 import com.vitiwari.response.JWTResponse;
 import com.vitiwari.services.AuthProvider.MyUserDetails;
@@ -11,6 +10,7 @@ import com.vitiwari.services.Exceptions.EmailIdAlreadyExistsException;
 import com.vitiwari.services.Exceptions.UsernameAlreadyExistsException;
 import com.vitiwari.services.JWT.JWTService;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.sql.Ref;
 
 @Service
 public class UserService {
@@ -93,6 +95,7 @@ public class UserService {
                     .token(jwtService.generateToken(user))
                     .refreshToken(refreshTokenService.generateOrUpdateRefreshToken(user).getRefreshToken())
                     .msg("Login Successfully")
+                    .userName(user.getUserName())
                     .build();
         }
         return null;
@@ -170,9 +173,27 @@ public class UserService {
                         .token(jwtService.generateToken(user))
                         .refreshToken(refreshTokenService.generateOrUpdateRefreshToken(user).getRefreshToken())
                         .msg("Successfully generated new JWTToken using Refresh Token")
+                        .userName(user.getUserName())
                         .build();
             }
         }
         return null;
+    }
+
+    @Transactional
+    public String logoutUser(String userName) {
+        User user = userRepository.findByUserName(userName);
+
+        if(user == null)
+            return "Failed";
+
+        RefreshToken rt = user.getRefreshToken();
+
+        user.setRefreshToken(null);
+        userRepository.save(user);
+
+        refreshTokenService.deleteRefreshToken(rt);
+
+        return "User Logged Out Successfully";
     }
 }

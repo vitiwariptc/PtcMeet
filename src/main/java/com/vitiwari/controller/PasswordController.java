@@ -21,7 +21,7 @@ public class PasswordController {
     public ResponseEntity<?> forgotPassword(@RequestParam("username") String username) {
         String msg = userService.forgotPassword(username);
         if(!msg.equals("Failed"))
-            return ResponseEntity.ok("{\"msg\": \"Login Successfully\"}");
+            return ResponseEntity.ok("{\"msg\": \"%s\"}".formatted(msg));
         else
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Username Not Found");
     }

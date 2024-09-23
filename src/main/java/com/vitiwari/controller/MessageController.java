@@ -8,8 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 
 @Controller
@@ -20,18 +19,17 @@ public class MessageController {
 
     private ArrayList<String> activeUsers = new ArrayList<>();
 
+    private final Map<String, List<String>> groupMap = new HashMap<>();
+
     // mapped as /app/addUser
     @MessageMapping("/addUser")
     @SendTo("/chatroom/activeUsers")
     public ArrayList<String> addUserAndGetActiveUsersList(@RequestBody Message message) {
-
         Optional <String> name = activeUsers.stream()
-                                .filter(ele -> ele.equals(message.getMessage()))
+                                .filter(ele -> ele.equals(message.getSenderName()))
                                 .findFirst();
-
         if(name.isEmpty())
             activeUsers.add(message.getSenderName());
-
         return activeUsers;
     }
 
@@ -60,33 +58,73 @@ public class MessageController {
     @MessageMapping("/private-message")
     public void recMessage(@RequestBody Message message){
 
-        // client needs to be subscribed to /user/{username}/private
-        simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(),"/private",message);
+        if(groupMap.containsKey(message.getReceiverName())){
+            List<String> users = groupMap.get(message.getReceiverName());
+            String msg = (String) message.getMessage();
+            message.setMessage(message.getSenderName() + ": " + msg);
 
-        System.out.println(message.toString());
+            String tmp = message.getSenderName();
+            message.setSenderName(message.getReceiverName());
+
+            for(String user: users) {
+                message.setReceiverName(user);
+                if(!tmp.equals(user))
+                    simpMessagingTemplate.convertAndSendToUser(user,"/private",message);
+            }
+        }
+        else {
+            // client needs to be subscribed to /user/{username}/private
+            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message);
+        }
 
     }
 
     @MessageMapping("/private-file")
     public void recFile(@RequestBody Message message) {
-        simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "privateFile", message);
+
+        if(groupMap.containsKey(message.getReceiverName())){
+            List<String> users = groupMap.get(message.getReceiverName());
+
+            String tmp = message.getSenderName();
+            message.setSenderName(message.getReceiverName());
+
+            for(String user: users) {
+                message.setReceiverName(user);
+                if(!tmp.equals(user))
+                    simpMessagingTemplate.convertAndSendToUser(user,"/privateFile",message);
+            }
+        }else {
+            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "privateFile", message);
+        }
     }
 
     @MessageMapping("/private-offer")
     public void recOffer(@RequestBody Message message){
         simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(),"/privateOffer",message);
-        System.out.println(message);
     }
 
     @MessageMapping("/private-answer")
     public void recAnswer(@RequestBody Message message){
         simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(),"/privateAnswer",message);
-        System.out.println(message);
     }
 
     @MessageMapping("/private-icecandidate")
     public void recIceCandidate(@RequestBody Message message){
         simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(),"/privateIceCandidate",message);
-        System.out.println(message);
+    }
+
+    @MessageMapping("/addGroup")
+    public void addGroup (@RequestBody Message message) {
+        // receiver name will be the group name;
+
+        List<String> users = (List<String>) message.getMessage();
+        groupMap.put(message.getReceiverName(), users);
+
+        message.setSenderName(message.getReceiverName());
+
+        for(String user: users) {
+            message.setReceiverName(user);
+            simpMessagingTemplate.convertAndSendToUser(user,"/group", message);
+        }
     }
 }
